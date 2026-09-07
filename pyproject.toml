@@ -40,6 +40,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/tomsquest/barred"
 Repository = "https://github.com/tomsquest/barred"
+Changelog = "https://github.com/tomsquest/barred/releases"
 Issues = "https://github.com/tomsquest/barred/issues"
 Paper = "https://arxiv.org/abs/2604.25203"
 
