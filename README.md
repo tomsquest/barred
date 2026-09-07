@@ -9,17 +9,21 @@
 [![License](https://img.shields.io/github/license/tomsquest/barred?color=green)](LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.25203-b31b1b)](https://arxiv.org/abs/2604.25203)
 
-Unofficial implementation of the BARRED paper:
+**Unofficial** implementation of the BARRED paper:
 
 > Boundary Alignment Refinement through REflection and Debate, aka BARRED
 > [arXiv:2604.25203](https://arxiv.org/pdf/2604.25203)
+
+> [!NOTE]
+> I developed this library for my own needs without endorsement. 
+> It is not affiliated with the authors of the paper.
 
 ## What is BARRED?
 
 **In a nutshell**: BARRED is a framework for generating **faithful** and **diverse** synthetic training data using only
 a task description and a small set of unlabeled examples.
 
-**Step by step**:
+### Step by step
 
 1. Define the task and give examples to know what to generate Criterion:
     ```
@@ -34,6 +38,44 @@ a task description and a small set of unlabeled examples.
        2. `Her sister is boring -> false`
     ```
 
+### Show me some code
+
+```python
+#
+# Step 1. Task definition
+#
+criterion = "True when the sentence expresses a positive sentiment, False otherwise"
+examples = [
+   "The delivery arrived two days late and the box was crushed.",
+   "Honestly one of the best purchases I've made this year.",
+   "It works, I guess.",
+]
+
+#
+# Step 2. Decompose the Criterion into Dimensions
+#
+dimensions = await decompose_dimensions(llm, criterion=criterion, examples=examples)
+
+#
+# Step 3. Generate Samples
+#
+samples = [
+   sample
+   async for sample in barred(
+      llm,
+      criterion=criterion,
+      examples=examples,
+      dimensions=dimensions,
+      num_samples=5,
+   )
+]
+```
+
+
+## Notebook/Demo
+
+Open the Demo notebook in [Google Colab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb).
+
 ## Why it's cool?
 
 TODO
@@ -47,9 +89,9 @@ uv add barred
 pip install barred
 ```
 
-## Usage
+## Changelog/Releases
 
-TODO
+Changelog and releases are on [GitHub Releases](https://github.com/tomsquest/barred/releases).
 
 ## Development setup
 
