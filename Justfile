@@ -26,6 +26,7 @@ test-llm *args:
 smoke:
     rm -rf dist
     uv build
+    uvx twine check --strict dist/*
     uv run --isolated --no-project --with dist/*.whl tests/smoke_test.py
 
 # Check the library works on an older Python (default 3.12): runs the whole test suite against it
