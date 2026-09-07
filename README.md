@@ -4,6 +4,11 @@
 
 # BARRED: generate faithful and diverse training sets
 
+[![PyPI](https://img.shields.io/pypi/v/barred?color=blue)](https://pypi.org/project/barred/)
+[![Python versions](https://img.shields.io/pypi/pyversions/barred)](https://pypi.org/project/barred/)
+[![License](https://img.shields.io/github/license/tomsquest/barred?color=green)](LICENSE)
+[![arXiv](https://img.shields.io/badge/arXiv-2604.25203-b31b1b)](https://arxiv.org/abs/2604.25203)
+
 Unofficial implementation of the BARRED paper:
 
 > Boundary Alignment Refinement through REflection and Debate, aka BARRED
