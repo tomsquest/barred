@@ -59,3 +59,21 @@ Check everything (lint, type, tests...):
 ```bash
 just checks
 ```
+
+## Release
+
+Releases are triggered by a version tag: pushing `v*` runs `.github/workflows/release.yml`,
+which builds, smoke-tests the wheel and the sdist, then publishes to PyPI via Trusted
+Publishing (no token involved).
+
+`just release` recipe does the whole sequence — bump, check, commit, tag, push:
+
+```bash
+just release minor   # 0.2.0 => 0.3.0
+just release patch   # 0.2.0 => 0.2.1
+just release rc      # 0.2.0 => 0.2.0rc1, published as a pre-release
+just release 1.0.0   # explicit version
+```
+
+It refuses to start from a dirty tree or outside `main`, and rolls the bump back if
+anything fails, so a failed run leaves nothing behind.

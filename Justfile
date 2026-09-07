@@ -43,6 +43,43 @@ check-python version="3.12":
 # Run all checks
 checks: lint format type test smoke
 
+# Release a new version: `just release minor` or `just release 0.3.0`
+release version:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Preflight
+    [[ -z "$(git status --porcelain)" ]] || { echo "Working tree is dirty"; exit 1; }
+    [[ "$(git branch --show-current)" == "main" ]] || { echo "Not on main"; exit 1; }
+    git pull --ff-only
+
+    # Ensure everything ok
+    just checks
+    # Ensure clean tree after checks ran
+    git diff --exit-code
+
+    # Cleanup on errors
+    start=$(git rev-parse HEAD)
+    cleanup() {
+        git tag -d "v${new:-}" 2>/dev/null || true
+        git reset --hard "$start" >/dev/null 2>&1 || true
+    }
+    trap cleanup ERR
+
+    # bump
+    if [[ "{{ version }}" =~ ^[0-9] ]]; then
+        uv version "{{ version }}"
+    else
+        uv version --bump "{{ version }}"
+    fi
+    new=$(uv version --short)
+
+    # Tag and push
+    git commit -am "chore: release v${new}"
+    git tag "v${new}"
+    git push --atomic origin main "v${new}"
+    trap - ERR
+
 # Install dependencies and set up the project (run this after cloning the repo)
 install:
     uv sync
