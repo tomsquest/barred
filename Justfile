@@ -94,16 +94,3 @@ upgrade:
 # Remove all generated files and reset the project to a clean state
 clean:
     uvx cleanpy -a .
-    uv sync
-
-# Generate the dimensions and instantiations from the Criterion and Query-Designation pairs
-generate-dimensions *args:
-    uv run python -m demo.main generate-dimensions {{ args }}
-
-# Generate the samples from the dimensions/instantiations
-generate-samples *args:
-    uv run python -m demo.main generate-samples {{ args }}
-
-# Generate the dataset in CSV format
-generate-dataset *args:
-    uv run python -m demo.main generate-dataset {{ args }}
