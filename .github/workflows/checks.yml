@@ -1,0 +1,33 @@
+name: Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.12", "3.13", "3.14" ]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # frozen: v7.0.1
+
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # frozen: v10.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3  # frozen: v4
+
+      - run: just checks
+
+      # `just checks` runs `ruff check --fix` and `ruff format`, which rewrite files.
+      # Without this, drifted formatting would be fixed in the runner and pass green.
+      - name: No file was modified
+        run: git diff --exit-code

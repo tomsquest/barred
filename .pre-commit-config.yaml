@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0 # pragma: allowlist secret
+    hooks:
+      - id: check-yaml
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0f34924c4110aca2294a4e4204aac7b3e31803fb  # frozen: 0.12.7 # pragma: allowlist secret
+    hooks:
+      - id: uv-lock
+  - repo: https://github.com/kynan/nbstripout
+    rev: 34071b78c181af3bf5af955c1426466e096fc3db  # frozen: 0.9.1 # pragma: allowlist secret
+    hooks:
+      - id: nbstripout
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: 01886c8a910c64595c47f186ca1ffc0b77fa5458  # frozen: v1.5.0 # pragma: allowlist secret
+    hooks:
+      - id: detect-secrets
+        name: 'detect-secrets'
+        args: [ '--exclude-files', '.*\.ipynb$' ]
+      - id: detect-secrets
+        name: 'detect-secrets-jupyter'
+        args: [ '--exclude-files', '.*[^i][^p][^y][^n][^b]$', '--exclude-lines', '"(hash|id|image/\w+)":.*' ]
+  - repo: local
+    hooks:
+      - id: just-checks
+        name: just-checks
+        entry: just checks
+        language: system
+        types_or: [ python, jupyter ]
+        pass_filenames: false
