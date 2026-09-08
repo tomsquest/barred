@@ -25,6 +25,8 @@ a task description and a small set of unlabeled examples.
 
 ### Step by step
 
+![two_steps.png](doc/two_steps.png)
+
 1. Define the task: a Criterion, plus a few examples of the kind of input you work on
     ```
     Criterion: True when the sentence expresses a positive sentiment, False otherwise
@@ -78,6 +80,8 @@ Then, each instantiation will serve as a "seed" for the LLM to generate samples.
 But can we generate samples directly from those instantiations right away? Of course not, that would be too simple!
 
 #### Second smart idea of BARRED
+
+![generate_sample.png](doc/generate_sample.png)
 
 BARRED makes 2 judges debate each sample until they agree.
 When a judge disagrees, the sample is reworked using their feedback, then debated again, and so on. 
