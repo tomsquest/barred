@@ -48,7 +48,7 @@ Results: a set of **labeled** samples:
 
 Over the past few years, here's what kept happening to me:
 - I developed a classifier but got no dataset (business people were busy)
-- I asked for relevancy judgments on products, but got no dataset
+- I asked for relevancy judgments on products, but got quite nothing
 - I begged for annotated samples of search queries, but got none
 
 So, BARRED is cool because it solves these problems by generating samples almost automatically.
@@ -67,14 +67,22 @@ The naive way is to let an LLM generate samples straight from the problem descri
 
 LLMs forget parts of the problem. They don't "explore" much, they stick to their few default answers.
 
-**Solution**: BARRED decomposes the problem into "Dimensions" and "Instantiations" of those dimensions. I didn't know what an "instantiation" was (except in computing). An instantiation is "concrete evidence in support of a concept/claim".
+#### First smart idea of BARRED
+
+The first thing that BARRED does is to decompose the problem into "Dimensions" and "Instantiations" of those dimensions. 
+
+_I didn't know what an "instantiation" was (except in computing), but an `instantiation` is "concrete evidence in support of a concept/claim"._
 
 Then, each instantiation will serve as a "seed" for the LLM to generate samples.
 
-But can we trust those samples right away? Of course not.
+But can we generate samples directly from those instantiations right away? Of course not, that would be too simple!
 
-**Solution**: BARRED makes judges debate each sample until they agree.
-When a judge disagrees, the sample is reworked using their feedback, then debated again, and so on. Smart!
+#### Second smart idea of BARRED
+
+BARRED makes 2 judges debate each sample until they agree.
+When a judge disagrees, the sample is reworked using their feedback, then debated again, and so on. 
+
+In the end, the generated samples can be accepted or not. This library only streams accepted samples, but you can also access the rejected ones using an `Observer`.
 
 ## Installation
 
@@ -85,7 +93,7 @@ uv add barred
 pip install barred
 ```
 
-`barred` builds on [any-llm](https://docs.mozilla.ai/any-llm/), which ships **no provider SDK by default**.
+This library builds on [any-llm from Mozilla AI](https://docs.mozilla.ai/any-llm/), and ships **no provider SDK by default**.  
 You need the `any-llm-sdk` extra for the provider you want:
 
 | Provider      | Install                                       |
@@ -95,8 +103,9 @@ You need the `any-llm-sdk` extra for the provider you want:
 | Gemini        | `uv add barred "any-llm-sdk[gemini]"`         |
 | All providers | `uv add barred "any-llm-sdk[all]"`            |
 
-Then set the matching key in your environment (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...).
 See the [list of providers of any-llm](https://docs.mozilla.ai/providers).
+
+Then set the matching key in your environment (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...) or pass it to the `llm()` constructor.
 
 ## Show me some code
 
@@ -117,7 +126,8 @@ examples = [
 
 
 async def main():
-    # Your provider, your model. The key is read from the environment (OPENAI_API_KEY here).
+    # Your provider, your model.
+    # The key is read from the environment (OPENAI_API_KEY here), or with `api_key` param.
     llm = LLM(provider="openai", model="gpt-5.6-terra")
 
     #
