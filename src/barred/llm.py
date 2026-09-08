@@ -84,6 +84,7 @@ class LLM:
         reasoning_effort: ReasoningEffort = "medium",  # Thinking level used in BARRED
         retry: int = 2,
         retry_base_delay: float = 1.0,
+        retry_max_delay: float = 30.0,
         observer: Observer | None = None,
         **provider_kwargs: Any | None,  # noqa: ANN401
     ) -> None:
@@ -98,6 +99,8 @@ class LLM:
             retry: Default number of retries on transient failure (0 = no retry).
                 Can be overridden per call.
             retry_base_delay: Base delay in seconds for exponential backoff between retries.
+            retry_max_delay: Ceiling in seconds for a single backoff wait, so the last
+                retries stay short instead of doubling into minutes.
             observer: Notified of every pipeline event, not just LLM calls. Defaults to a
                 no-op observer; `LoggingObserver` logs the whole run.
             **provider_kwargs: Forwarded to `AnyLLM.create` (e.g., VertexAI `project`, `location`).
@@ -113,6 +116,7 @@ class LLM:
         self._reasoning_effort = reasoning_effort
         self._retry = retry
         self._retry_base_delay = retry_base_delay
+        self._retry_max_delay = retry_max_delay
         self.observer = observer or NullObserver()
         self.total_usage = TokenUsage()
 
@@ -171,7 +175,10 @@ class LLM:
                 last_error = e
                 if attempt == self._retry:
                     break
-                delay = self._retry_base_delay * (2**attempt) + random.uniform(0, 0.5)  # noqa: S311
+                backoff = min(
+                    self._retry_base_delay * (2**attempt), self._retry_max_delay
+                )
+                delay = backoff + random.uniform(0, 0.5)  # noqa: S311
                 self.observer.on_llm_retry(
                     context=context,
                     attempt=attempt + 1,
