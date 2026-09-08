@@ -110,32 +110,32 @@ from barred import LLM, barred, decompose_dimensions
 #
 criterion = "True when the sentence expresses a positive sentiment, False otherwise"
 examples = [
-   "The delivery arrived two days late and the box was crushed.",
-   "Honestly one of the best purchases I've made this year.",
-   "It works, I guess.",
+    "The delivery arrived two days late and the box was crushed.",
+    "Honestly one of the best purchases I've made this year.",
+    "It works, I guess.",
 ]
 
 
 async def main():
-   # Your provider, your model. The key is read from the environment (OPENAI_API_KEY here).
-   llm = LLM(provider="openai", model="gpt-5.6-terra")
+    # Your provider, your model. The key is read from the environment (OPENAI_API_KEY here).
+    llm = LLM(provider="openai", model="gpt-5.6-terra")
 
-   #
-   # Step 2. Decompose the Criterion into Dimensions
-   #
-   dimensions = await decompose_dimensions(llm, criterion=criterion, examples=examples)
+    #
+    # Step 2. Decompose the Criterion into Dimensions
+    #
+    dimensions = await decompose_dimensions(llm, criterion=criterion, examples=examples)
 
-   #
-   # Step 3. Generate Samples, streamed as they land
-   #
-   async for sample in barred(
-           llm,
-           criterion=criterion,
-           examples=examples,
-           dimensions=dimensions,
-           num_samples=5,
-   ):
-      print(sample.label, "->", sample.input_block)
+    #
+    # Step 3. Generate Samples, streamed as they land
+    #
+    async for sample in barred(
+        llm,
+        criterion=criterion,
+        examples=examples,
+        dimensions=dimensions,
+        num_samples=5,
+    ):
+        print(sample.label, "->", sample.input_block)
 
 
 asyncio.run(main())
