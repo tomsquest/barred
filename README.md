@@ -153,7 +153,14 @@ asyncio.run(main())
 
 ## Notebook/Demo
 
-Open the Demo notebook in [Google Colab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb).
+> [!NOTE]
+> The notebook is the best way to **see BARRED in action**.
+>
+> It includes: dimensions decomposition and the generation of samples.  
+> You will also be able to give a grasp on the generated data
+>
+> [Open Notebook in GitHub](https://github.com/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
+> [Open Notebook in GoogleColab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
 
 ## Authors and resources
 
