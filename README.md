@@ -88,6 +88,46 @@ When a judge disagrees, the sample is reworked using their feedback, then debate
 
 In the end, the generated samples can be accepted or not. This library only streams accepted samples, but you can also access the rejected ones using an `Observer`.
 
+### The Algorithm, complete edition
+
+BARRED, as implemented:
+
+```
+1: Input: criterion C, examples E, target size N,
+2:        concurrency K, max_debate_rounds B, max_refine_rounds R, max_attempts M = 2N
+3:
+4: # Step 1 — dimensions and their instantiations (paper lines 2-5, fused)
+5: D ← decompose_dimensions(llm, criterion=C, examples=E, concurrency=5)
+6:     # each d ∈ D is a DecomposedDimension(dimension, instantiations)
+7:
+8: # Step 2 — draw → generate → debate → refine, K attempts in flight
+9: G ← ∅ ; attempts ← 0
+10: while |G| < N and attempts < M do
+11:     attempts ← attempts + 1
+12:     d ~ Uniform(D)  ;  v ~ Uniform(d.instantiations)
+13:     e ~ Uniform(E)  ;  y ~ Uniform({True, False})
+14:
+15:     s ← generate_sample(llm, criterion=C, example=e,
+16:                         instantiation=v, target_verdict=y)
+17:         # s is a Sample(reasoning, input_block, label)
+18:
+19:     for ℓ = 0, 1, ..., R do
+20:         res ← debate(llm, criterion=C, sample=s, max_debate_rounds=B)
+21:             # res is a DebateResult(valid, dissenting_feedback)
+22:
+23:         if res.valid then
+24:             G ← G ∪ {s} ; yield s
+25:             break
+26:         end if
+27:         if ℓ = R then break end if      # refining now would skip validation
+28:
+29:         s ← refine_sample(llm, criterion=C, example=e, instantiation=v,
+30:                           sample=s, dissenting_feedback=res.dissenting_feedback)
+31:     end for
+32: end while
+33: return G
+```
+
 ## Installation
 
 ```
