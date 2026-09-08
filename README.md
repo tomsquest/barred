@@ -27,13 +27,13 @@ a task description and a small set of unlabeled examples.
 
 ![two_steps.png](doc/two_steps.png)
 
-1. Define the task: a Criterion, plus a few examples of the kind of input you work on
+1. Define the task: a Criterion, plus a few examples of input you work on
     ```
     Criterion: True when the sentence expresses a positive sentiment, False otherwise
 
     Examples:
       - The delivery arrived two days late and the box was crushed.
-      - Honestly one of the best purchases I've made this year.
+      - Honestly, one of the best purchases I've made this year.
       - It works, I guess.
     ```
 2. Let the library decompose the problem into dimensions
@@ -51,7 +51,7 @@ Results: a set of **labeled** samples:
 Over the past few years, here's what kept happening to me:
 - I developed a classifier but got no dataset (business people were busy)
 - I asked for relevancy judgments on products, but got quite nothing
-- I begged for annotated samples of search queries, but got none
+- I begged for annotated samples of search queries but got none
 
 So, BARRED is cool because it solves these problems by generating samples almost automatically.
 
@@ -83,7 +83,7 @@ But can we generate samples directly from those instantiations right away? Of co
 
 ![generate_sample.png](doc/generate_sample.png)
 
-BARRED makes 2 judges debate each sample until they agree.
+BARRED makes two judges debate each sample until they agree.
 When a judge disagrees, the sample is reworked using their feedback, then debated again, and so on. 
 
 In the end, the generated samples can be accepted or not. This library only streams accepted samples, but you can also access the rejected ones using an `Observer`.
@@ -128,6 +128,71 @@ BARRED, as implemented:
 33: return G
 ```
 
+### The Algorithm, in bullets
+
+(Because I like bullets, plus some notes)
+
+1. Task definition
+   1. Criterion = task description = the classification Criterion.  
+      E.g., “Is the product relevant for the query?”
+   2. Unlabeled examples  
+      10 to 30 are enough  
+      No label is needed, represent the “shape” of the input data.  
+      E.g., “query: drill, product: bosch hammer drill”  
+2. Dimensions decomposition
+   1. dimension extraction
+   2. dimension deduplication // it may happen, at least the Authors added that step
+   3. dimension instantiation  
+      ```
+      For each dimension:
+        instantiations = verbalized_sampling(dimension)
+        // list of name + polarity + score
+      ```
+3. Sample Generation
+   1. Take a dimension  
+      Take an instantiation of this dimension  
+      Take an example  
+      Take a label (true/false)  
+      (not random, take each in turn, aka uniform distribution)  
+      Consequence:
+        - binary label → 50/50 dataset → maybe not your reality  
+        - The “polarity” of the instantiation is discarded
+   2. Generate a sample calling the LLM with these inputs
+   3. The prompt enforces four simultaneous constraints:
+      1. The sample must align with instantiation → diversity
+      2. The label must align with the expected label → control
+      3. The sample must match the example's domain and style → realism
+      4. The sample must be a BOUNDARY CASE, not a trivial one.  
+        "stress-test a smart and successful classifier".  
+          - Trick: the generator also emits the reasoning = the justification of the label.  
+          - Trick: no meta-leakage allowed ("do not mention test cases, models, dimensions, or labels in your output")  
+          - Note: If the generate sample label is not the target one, the divergence is logged and ignored.  
+   4. Debate label
+      - Two judges take the sample (text and label). One judge is precision-oriented, the other is recall-oriented. A judge provides a verdict (reasoning, label, confidence).
+      - Round 1:
+        - each judge classifies the text → get a judge label
+        - Sample label = judge1 label = judge2 label → accept sample
+      - Round 2 if not consensus:
+        - Each judge receives its previous verdict + verdict of the other judge + reasoning of the sample (= why this sample should be like that)
+        - Consensus? → accept sample or return the dissenting feedbacks
+   5. Refine sample
+     At this step, the sample was rejected and the judges provided feedback.  
+     A new sample is generated, and this sample is debated.  
+     = a sample is never accepted without a debate.  
+4. Profit!
+
+> [!NOTE]
+> What is **Verbalized Sampling**?
+> 
+> Do not ask for a list, ask for a “distribution”.  
+> = instead of a list of strings (the instantiations), ask the LLM for a description of the instantiation, a polarity (true/false/both) and a score (probability). We don’t use the polarity, nor the score afterward.  
+> 
+> Unlock **Diversity** and pushes beyond typical modes.
+> 
+> (This technique is at the core of BARRED and is awesome!)  
+> 
+>Link to the [Paper "Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity"](https://arxiv.org/abs/2510.01171)
+
 ## Installation
 
 ```
@@ -147,7 +212,7 @@ You need the `any-llm-sdk` extra for the provider you want:
 | Gemini        | `uv add barred "any-llm-sdk[gemini]"`         |
 | All providers | `uv add barred "any-llm-sdk[all]"`            |
 
-See the [list of providers of any-llm](https://docs.mozilla.ai/providers).
+See the [full list of providers](https://docs.mozilla.ai/providers).
 
 Then set the matching key in your environment (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...) or pass it to the `llm()` constructor.
 
@@ -164,14 +229,14 @@ from barred import LLM, barred, decompose_dimensions
 criterion = "True when the sentence expresses a positive sentiment, False otherwise"
 examples = [
     "The delivery arrived two days late and the box was crushed.",
-    "Honestly one of the best purchases I've made this year.",
+    "Honestly, one of the best purchases I've made this year.",
     "It works, I guess.",
 ]
 
 
 async def main():
     # Your provider, your model.
-    # The key is read from the environment (OPENAI_API_KEY here), or with `api_key` param.
+    # The key is read from the environment (OPENAI_API_KEY here), or with the ` api_key ` param.
     llm = LLM(provider="openai", model="gpt-5.6-terra")
 
     #
@@ -204,7 +269,7 @@ asyncio.run(main())
 > You will also be able to give a grasp on the generated data
 >
 > [Open Notebook in GitHub](https://github.com/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
-> [Open Notebook in GoogleColab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
+> [Open Notebook in Google Colab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
 
 ## Authors and resources
 
