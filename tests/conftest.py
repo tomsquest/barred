@@ -181,7 +181,7 @@ def llm(observer: PrintEventsObserver) -> LLM:
         model=model,
         reasoning_effort="medium",
         max_tokens=16384,
-        retry=2,
-        retry_base_delay=2.0,
+        retry=5,
+        retry_base_delay=5.0,
         observer=observer,
     )
