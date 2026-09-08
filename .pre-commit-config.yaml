@@ -26,5 +26,4 @@ repos:
         name: just-checks
         entry: just checks
         language: system
-        types_or: [ python, jupyter ]
         pass_filenames: false
