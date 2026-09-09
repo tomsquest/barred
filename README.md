@@ -147,6 +147,22 @@ async def main():
 asyncio.run(main())
 ```
 
+### Parameters
+
+The knobs you are likely to turn:
+
+| Parameter           | Default           | What it does                                                                                                                      |
+|---------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `num_samples`       | required          | Accepted samples to reach before stopping                                                                                         |
+| `max_attempts`      | `2 × num_samples` | Attempt budget. The run stops there, reached or not, so a run costs at worst twice a perfect one                                  |
+| `concurrency`       | `8`               | Attempts in flight. Set it to `1` to watch the run step by step                                                                   |
+| `max_debate_rounds` | `2`               | Judge rounds per debate. `2` is the paper's `T`                                                                                   |
+| `max_refine_rounds` | `2`               | Refinement passes per attempt. The paper does not give its `R_max`                                                                |
+| `observer`          | none              | Set on `LLM(...)`. Gets every event, including the **rejected** samples and the token usage. `LoggingObserver` logs the whole run |
+
+`decompose_dimensions()` has its own `concurrency` (default `5`).  
+`LLM(...)` carries the model settings: `reasoning_effort` (default `"medium"`, the paper's setting), and the retry policy.
+
 ## Notebook/Demo
 
 > [!NOTE]
@@ -320,7 +336,7 @@ Places where the paper is silent, and I had to pick an interpretation:
 - **"Filter out semantically similar dimensions"**, method not described: I use an LLM pass, replaying the
   conversation. Maybe the authors loop on the seed examples, generated multiple lists of dimensions, then deduplicating those lists into one. In the code, I pass all examples, no a chunk of them, nor some of them randomly.
 
-## The paper, its authors and resources
+## The paper, its authors, and resources
 
 Paper authors:
 - [Arnon Mazza](https://www.linkedin.com/in/arnon-mazza-4471424/)
