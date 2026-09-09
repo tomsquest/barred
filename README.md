@@ -268,7 +268,7 @@ asyncio.run(main())
 > It includes: dimensions decomposition and the generation of samples.  
 > You will also be able to give a grasp on the generated data
 >
-> [Open Notebook in GitHub](https://github.com/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
+> [Open Notebook in GitHub](https://github.com/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)  
 > [Open Notebook in Google Colab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
 
 ## Authors and resources
