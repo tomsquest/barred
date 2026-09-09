@@ -25,7 +25,7 @@ a task description and a small set of unlabeled examples.
 
 ### Step by step
 
-![two_steps.png](doc/two_steps.png)
+![https://raw.githubusercontent.com/tomsquest/barred/main/doc/two_steps.png](doc/two_steps.png)
 
 1. Define the task: a Criterion, plus a few examples of input you work on
     ```
@@ -81,7 +81,7 @@ But can we generate samples directly from those instantiations right away? Of co
 
 #### Second smart idea of BARRED
 
-![generate_sample.png](doc/generate_sample.png)
+![https://raw.githubusercontent.com/tomsquest/barred/main/doc/generate_sample.png](doc/generate_sample.png)
 
 BARRED makes two judges debate each sample until they agree.
 When a judge disagrees, the sample is reworked using their feedback, then debated again, and so on. 
