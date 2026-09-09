@@ -142,10 +142,6 @@ def _get_user_message(  # noqa: PLR0913
 {sample.input_block}
 </FAILED_INPUT_BLOCK>
 
-<CURRENT_REASONING>
-{sample.reasoning}
-</CURRENT_REASONING>
-
 <DISSENTING_DEBATERS_ARGUMENTS>
 {"\n".join(f"- {feedback}" for feedback in dissenting_feedback)}
 </DISSENTING_DEBATERS_ARGUMENTS>
