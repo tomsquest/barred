@@ -193,6 +193,38 @@ BARRED, as implemented:
 > 
 >Link to the [Paper "Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity"](https://arxiv.org/abs/2510.01171)
 
+### Paper fidelity, and its gray zone
+
+As an independent reimplementation, I tried to keep the paper fidelity as much as possible.
+
+I audited the code against the paper, line by line. The four steps are all there, and the prompts follow the Appendix
+almost word for word.
+
+#### Where I diverge
+
+- **The generated label wins over the drawn one.**  
+  Algorithm 1 draws a target label `y`, then debates and refines against that `y`.
+  But the generation prompt (A.2) asks the LLM for "the label you believe it should get", so the LLM can flip it.
+  Here, the flip is logged, and the generated label becomes the authority for the debate and the refinement.
+  Consequence: the 50/50 balance of the dataset is not guaranteed.  
+  (The tension lives in the paper itself)
+- **Three guidelines dropped from the dimension extraction prompt** (A.1):
+  I think those guidelines were task-specific, introduced by the authors for the tasks they were working on.
+  So "position in the input block", "computations / number of occurrences" and "jailbreak scenarios for transcripts" were removed.
+- **Temperatures and seeds are mine** (the paper says nothing): `temperature=1.0` and `seed=None` to generate and refine (diversity), `temperature=0.0` and `seed=0` to judge and deduplicate (stability).
+
+#### The gray zones
+
+Places where the paper is silent, and I had to pick an interpretation:
+
+- **The Advocate never calls the LLM.** The paper describes an advocate defending the sample, "rigid, never changing
+  position". So either the Advocate is a LLM call, or just "fields" added to the prompt to the judges.
+- **`R_max` is not given** (`T = 2` debate rounds is). Default here: 2 refinement rounds.
+- **`{target_dimension}` in the generation prompt**: the dimension, the sampled instantiation, or both?
+  I pass the instantiation description only.
+- **"Filter out semantically similar dimensions"**, method not described: I use an LLM pass, replaying the
+  conversation. Maybe the authors loop on the seed examples, generated multiple lists of dimensions, then deduplicating those lists into one. In the code, I pass all examples, no a chunk of them, nor some of them randomly.
+
 ## Installation
 
 ```
@@ -271,7 +303,7 @@ asyncio.run(main())
 > [Open Notebook in GitHub](https://github.com/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)  
 > [Open Notebook in Google Colab](https://colab.research.google.com/github/tomsquest/barred/blob/main/notebooks/demo_sentiment_analysis.ipynb)
 
-## Authors and resources
+## Paper authors and resources
 
 Paper authors:
 - [Arnon Mazza](https://www.linkedin.com/in/arnon-mazza-4471424/)
