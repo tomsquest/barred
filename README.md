@@ -6,7 +6,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/barred?color=blue)](https://pypi.org/project/barred/)
 [![Python versions](https://img.shields.io/pypi/pyversions/barred)](https://pypi.org/project/barred/)
-[![License](https://img.shields.io/github/license/tomsquest/barred?color=green)](LICENSE)
+[![License](https://img.shields.io/github/license/tomsquest/barred?color=green)](https://github.com/tomsquest/barred/blob/main/LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.25203-b31b1b)](https://arxiv.org/abs/2604.25203)
 
 **Unofficial** implementation of the BARRED paper:
@@ -27,7 +27,7 @@ a task description and a small set of unlabeled examples.
 
 ### Step by step
 
-![https://raw.githubusercontent.com/tomsquest/barred/main/doc/two_steps.png](doc/two_steps.png)
+![Two steps](https://raw.githubusercontent.com/tomsquest/barred/main/doc/two_steps.png)
 
 1. Define the task: a Criterion, plus a few examples of input you work on
     ```
@@ -192,7 +192,7 @@ But can we generate samples directly from those instantiations right away? Of co
 
 ### Debate and refinement
 
-![https://raw.githubusercontent.com/tomsquest/barred/main/doc/generate_sample.png](doc/generate_sample.png)
+![Generating a sample](https://raw.githubusercontent.com/tomsquest/barred/main/doc/generate_sample.png)
 
 BARRED makes two judges debate each sample until they agree.
 When a judge disagrees, the sample is reworked using their feedback, then debated again, and so on. 
