@@ -75,7 +75,7 @@ async def decompose_dimensions(
     return decomposed_dimensions
 
 
-class InstantiationRaw(BaseModel):
+class _InstantiationRaw(BaseModel):
     """A concrete, tangible case along a dimension, from which test cases for the CRITERION can be constructed."""
 
     description: str = Field(
@@ -106,12 +106,12 @@ class InstantiationRaw(BaseModel):
     )
 
 
-class DimensionList(BaseModel):
+class _DimensionList(BaseModel):
     dimensions: list[Dimension]
 
 
-class InstantiationList(BaseModel):
-    instantiations: list[InstantiationRaw]
+class _InstantiationList(BaseModel):
+    instantiations: list[_InstantiationRaw]
 
 
 def _get_dimension_system_message() -> str:
@@ -197,13 +197,13 @@ async def _generate_dimensions(
     result = await llm.call(
         temperature=1.0,
         seed=0,
-        response_format=DimensionList,
+        response_format=_DimensionList,
         messages=input_messages,
         context="decompose_dimensions:generate_dimensions",
     )
 
     # Assert ok
-    dimension_list: DimensionList = result.parsed
+    dimension_list: _DimensionList = result.parsed
     if len(dimension_list.dimensions) == 0:
         msg = "No dimensions generated"
         raise DecompositionError(msg)
@@ -232,12 +232,12 @@ async def _deduplicate_dimensions(
     result = await llm.call(
         temperature=0.0,  # Determinist
         seed=0,
-        response_format=DimensionList,
+        response_format=_DimensionList,
         messages=messages,
         context="decompose_dimensions:deduplicate_dimensions",
     )
 
-    dimension_list: DimensionList = result.parsed
+    dimension_list: _DimensionList = result.parsed
     if len(dimension_list.dimensions) == 0:
         msg = "Unable to deduplicate dimensions"
         raise DecompositionError(msg)
@@ -283,7 +283,7 @@ async def _generate_instantiations(
     llm: LLM,
     previous_messages: list[Message],
     dimension: Dimension,
-) -> InstantiationList:
+) -> _InstantiationList:
     messages: list[Message] = [
         {
             "role": "system",
@@ -298,7 +298,7 @@ async def _generate_instantiations(
     instantiation_response = await llm.call(
         temperature=1.0,
         seed=0,
-        response_format=InstantiationList,
+        response_format=_InstantiationList,
         messages=[
             *previous_messages,
             *messages,
@@ -306,7 +306,7 @@ async def _generate_instantiations(
         context=f"decompose_dimensions:generate_instantiations:dim={dimension.name}",
     )
 
-    instantiation_list: InstantiationList = instantiation_response.parsed
+    instantiation_list: _InstantiationList = instantiation_response.parsed
     if len(instantiation_list.instantiations) == 0:
         msg = "No instantiations generated"
         raise DecompositionError(msg)

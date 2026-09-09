@@ -4,9 +4,9 @@ from typing import cast
 import pytest
 
 from barred.decompose_dimensions import (
-    DimensionList,
-    InstantiationList,
-    InstantiationRaw,
+    _DimensionList,
+    _InstantiationList,
+    _InstantiationRaw,
     decompose_dimensions,
 )
 from barred.exceptions import DecompositionError
@@ -63,17 +63,17 @@ class _FakeLLM:
         self.instantiations = instantiations
 
     async def call(self, *, response_format: type, **_: object) -> SimpleNamespace:
-        if response_format is DimensionList:
-            parsed = DimensionList(
+        if response_format is _DimensionList:
+            parsed = _DimensionList(
                 dimensions=[
                     Dimension(name=name, description="description")
                     for name in self.dimension_lists.pop(0)
                 ]
             )
         else:
-            parsed = InstantiationList(
+            parsed = _InstantiationList(
                 instantiations=[
-                    InstantiationRaw(
+                    _InstantiationRaw(
                         description=description, polarity="both", score=0.5
                     )
                     for description in self.instantiations
