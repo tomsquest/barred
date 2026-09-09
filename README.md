@@ -23,6 +23,8 @@
 In a nutshell: BARRED is a framework for generating **faithful** and **diverse** synthetic training data using only
 a task description and a small set of unlabeled examples.
 
+**TL;DR:** describe a task, get an annotated dataset
+
 ### Step by step
 
 ![https://raw.githubusercontent.com/tomsquest/barred/main/doc/two_steps.png](doc/two_steps.png)
@@ -62,6 +64,17 @@ Anyone can tell that a hammer drill is relevant for a query on drills.
 But what about drill bits? And a drill bit adapter? And a drill toy? And the dozen cases nobody thinks about?
 
 That's where BARRED shines!
+
+### Limits
+
+Both come from following the paper closely, not from anything being hard to do.
+
+1. **Binary classification only**: the label is `True` or `False`, no multi-class (e.g. `A/B/C`).  
+   The code and the prompts could be adapted, I'm pretty confident. But paper=binary, library=binary.
+2. **Plain text in, plain text out**: examples and generated samples are strings, no JSON schema/Structured output.  
+   In one of my tests, the seed examples were `query + product title` pairs flattened into a string,
+   so I had to parse the generated samples back to get the pieces.
+   Passing a schema to `barred()` would have been possible. (that's for v2)
 
 ### How?
 
@@ -166,7 +179,7 @@ BARRED, as implemented:
         "stress-test a smart and successful classifier".  
           - Trick: the generator also emits the reasoning = the justification of the label.  
           - Trick: no meta-leakage allowed ("do not mention test cases, models, dimensions, or labels in your output")  
-          - Note: If the generate sample label is not the target one, the divergence is logged and ignored.  
+          - Note: If the generated sample label is not the target one, the divergence is logged and ignored.  
    4. Debate label
       - Two judges take the sample (text and label). One judge is precision-oriented, the other is recall-oriented. A judge provides a verdict (reasoning, label, confidence).
       - Round 1:
@@ -218,8 +231,8 @@ almost word for word.
 Places where the paper is silent, and I had to pick an interpretation:
 
 - **The Advocate never calls the LLM.** The paper describes an advocate defending the sample, "rigid, never changing
-  position". So either the Advocate is a LLM call, or just "fields" added to the prompt to the judges.
-- **`R_max` is not given** (`T = 2` debate rounds is). Default here: 2 refinement rounds.
+  position". So either the Advocate is a LLM call or just "fields" added to the prompt to the judges.
+- **`R_max` is not given** (`T = 2` debate rounds is). Default here: two refinement rounds.
 - **`{target_dimension}` in the generation prompt**: the dimension, the sampled instantiation, or both?
   I pass the instantiation description only.
 - **"Filter out semantically similar dimensions"**, method not described: I use an LLM pass, replaying the
