@@ -368,6 +368,10 @@ The paper this library implements:
 }
 ```
 
+## Bonus: Make your own BARRED logo
+
+[![Logo Generator](https://raw.githubusercontent.com/tomsquest/barred/main/doc/logo_generator.png)](https://raw.githack.com/tomsquest/barred/main/doc/logo_generator.html)
+
 ## Changelog
 
 Changelog and releases are on [GitHub Releases](https://github.com/tomsquest/barred/releases).

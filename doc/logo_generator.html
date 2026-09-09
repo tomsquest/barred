@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BARRED — logo generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#111111;
+    --paper:#ffffff;
+    --rule:#e2e2df;
+    --rule-strong:#111111;
+    --mute:#767672;
+    --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header{border-bottom:1px solid var(--rule-strong);padding-bottom:14px;margin-bottom:0}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:0 0 4px}
+  h1{font-size:19px;font-weight:500;margin:0}
+  .layout{display:grid;grid-template-columns:1fr;gap:0}
+  @media (min-width:860px){
+    .layout{grid-template-columns:1fr 320px;gap:0}
+    .controls{border-left:1px solid var(--rule);padding-left:28px}
+    .stage{padding-right:28px}
+  }
+  .stage{padding-top:28px}
+  .controls{padding-top:28px}
+
+  .plate{
+    border:1px solid var(--rule);
+    padding:28px 20px;
+    display:flex;align-items:center;justify-content:center;
+    min-height:180px;
+    overflow:hidden;
+  }
+  .plate svg{max-width:100%;height:auto;display:block}
+
+  .ladder{margin-top:24px;border-top:1px solid var(--rule-strong);padding-top:18px}
+  .ladder h2{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;margin:0 0 14px}
+  .rungs{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap}
+  .rung{display:flex;flex-direction:column;gap:8px}
+  .rung .box{display:flex;align-items:center;justify-content:center;border:1px solid var(--rule);padding:8px}
+  .rung svg{height:auto;display:block}
+  .rung span{font-family:var(--mono);font-size:11px;color:var(--mute)}
+
+  .verdict{
+    margin-top:18px;font-family:var(--mono);font-size:12px;line-height:1.5;
+    border-left:2px solid var(--ink);padding:6px 0 6px 12px;
+  }
+  .verdict.warn{border-left-color:var(--ink);background:#f6f6f4}
+
+  fieldset{border:0;padding:0;margin:0 0 22px}
+  legend{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);padding:0;margin-bottom:10px}
+  .field{margin-bottom:14px}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12px;margin-bottom:4px}
+  .field label .val{color:var(--mute)}
+  input[type=range]{width:100%;accent-color:var(--ink);margin:0}
+  input[type=text],select{
+    width:100%;font-family:var(--mono);font-size:13px;color:var(--ink);
+    background:var(--paper);border:1px solid var(--rule);border-radius:0;padding:7px 9px;
+  }
+  input[type=text]:focus,select:focus,input[type=range]:focus-visible,button:focus-visible{
+    outline:2px solid var(--ink);outline-offset:2px;
+  }
+  .modes{display:flex;border:1px solid var(--rule)}
+  .modes button{
+    flex:1;background:var(--paper);border:0;border-right:1px solid var(--rule);
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    padding:9px 4px;cursor:pointer;color:var(--mute);
+  }
+  .modes button:last-child{border-right:0}
+  .modes button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+  .actions{display:flex;gap:8px;margin-top:26px;border-top:1px solid var(--rule-strong);padding-top:18px}
+  .actions button{
+    flex:1;font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+    padding:11px 8px;cursor:pointer;border:1px solid var(--ink);background:var(--paper);color:var(--ink);
+  }
+  .actions button.primary{background:var(--ink);color:var(--paper)}
+  .note{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:12px;line-height:1.6}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">BARRED</p>
+    <h1>Logo generator</h1>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="plate" id="plate"></div>
+
+      <div class="ladder">
+        <h2>Legibility ladder</h2>
+        <div class="rungs">
+          <div class="rung"><div class="box" id="r96"></div><span>96 px</span></div>
+          <div class="rung"><div class="box" id="r48"></div><span>48 px</span></div>
+          <div class="rung"><div class="box" id="r32"></div><span>32 px</span></div>
+          <div class="rung"><div class="box" id="r16"></div><span>16 px — favicon</span></div>
+        </div>
+        <p class="verdict" id="verdict"></p>
+      </div>
+    </section>
+
+    <section class="controls">
+      <fieldset>
+        <legend>Treatment</legend>
+        <div class="modes" role="group" aria-label="Letter treatment">
+          <button type="button" data-mode="hatched" aria-pressed="true">Hatched</button>
+          <button type="button" data-mode="striped" aria-pressed="false">Striped</button>
+          <button type="button" data-mode="cut" aria-pressed="false">Cut</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Word</legend>
+        <div class="field">
+          <label for="text">Text</label>
+          <input type="text" id="text" value="barred" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="family">Typeface</label>
+          <select id="family">
+            <option value="Inter, sans-serif">Inter</option>
+            <option value="Helvetica, Arial, sans-serif">Helvetica / Arial</option>
+            <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+            <option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="weight">Weight <span class="val" id="weight-v">700</span></label>
+          <input type="range" id="weight" min="400" max="900" step="100" value="700">
+        </div>
+        <div class="field">
+          <label for="tracking">Tracking <span class="val" id="tracking-v">-3</span></label>
+          <input type="range" id="tracking" min="-10" max="10" step="0.5" value="-3">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Hatching</legend>
+        <div class="field">
+          <label for="angle">Angle <span class="val" id="angle-v">-18°</span></label>
+          <input type="range" id="angle" min="-90" max="90" step="1" value="-18">
+        </div>
+        <div class="field">
+          <label for="stroke">Stroke width <span class="val" id="stroke-v">7</span></label>
+          <input type="range" id="stroke" min="1" max="40" step="0.5" value="7">
+        </div>
+        <div class="field">
+          <label for="spacing">Spacing <span class="val" id="spacing-v">17</span></label>
+          <input type="range" id="spacing" min="4" max="60" step="1" value="17">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Rendering</legend>
+        <div class="field">
+          <label for="invert">
+            <span>Black background</span>
+            <input type="checkbox" id="invert" style="width:auto;accent-color:#111">
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="button" class="primary" id="download">Download SVG</button>
+        <button type="button" id="copy">Copy code</button>
+      </div>
+      <p class="note" id="dims"></p>
+      <p class="note">The exported SVG relies on a <code>&lt;text&gt;</code> tag. Vectorise it before shipping: Inkscape → Path &gt; Object to Path, then Path &gt; Intersection.</p>
+    </section>
+  </div>
+</div>
+
+<svg id="measure" class="sr" aria-hidden="true"><text id="measure-text"></text></svg>
+
+<script>
+(function(){
+  var FONT_SIZE = 96;
+  var state = {
+    mode:"hatched", text:"barred", family:"Inter, sans-serif",
+    weight:700, tracking:-3, angle:-18, stroke:7, spacing:17, invert:false
+  };
+
+  var measureSvg = document.getElementById("measure");
+  var measureText = document.getElementById("measure-text");
+
+  function applyTextAttrs(el){
+    el.setAttribute("font-family", state.family);
+    el.setAttribute("font-size", FONT_SIZE);
+    el.setAttribute("font-weight", state.weight);
+    el.setAttribute("letter-spacing", state.tracking);
+  }
+
+  function measure(){
+    measureText.textContent = state.text || " ";
+    applyTextAttrs(measureText);
+    measureSvg.style.position = "absolute";
+    var b;
+    try { b = measureText.getBBox(); } catch(e){ b = {x:0,y:0,width:400,height:100}; }
+    if(!b.width || !b.height) b = {x:0,y:0,width:400,height:100};
+    return b;
+  }
+
+  function hatchLines(cx, cy, R){
+    var out = [];
+    var n = Math.ceil((2*R)/state.spacing) + 2;
+    var start = cx - R - state.spacing;
+    for(var i=0;i<n;i++){
+      var x = start + i*state.spacing;
+      out.push('<line x1="'+r(x)+'" y1="'+r(cy-R)+'" x2="'+r(x)+'" y2="'+r(cy+R)+'"/>');
+    }
+    return out.join("");
+  }
+
+  function r(v){ return Math.round(v*100)/100; }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function buildSVG(uid){
+    var b = measure();
+    var pad = Math.max(8, FONT_SIZE*0.12);
+    var vx = b.x - pad, vy = b.y - pad, vw = b.width + pad*2, vh = b.height + pad*2;
+    var cx = b.x + b.width/2, cy = b.y + b.height/2;
+    var R = Math.hypot(b.width, b.height)/2 + state.spacing*2;
+    var fg = state.invert ? "#ffffff" : "#000000";
+    var bg = state.invert ? "#000000" : "#ffffff";
+
+    var textAttrs = 'x="'+r(b.x)+'" y="0" font-family="'+esc(state.family)+'" font-size="'+FONT_SIZE+
+      '" font-weight="'+state.weight+'" letter-spacing="'+state.tracking+'"';
+    var word = esc(state.text);
+    var body = "";
+    var defs = "";
+
+    if(state.mode === "hatched"){
+      defs = '<clipPath id="clip'+uid+'"><text '+textAttrs+'>'+word+'</text></clipPath>';
+      body = '<g clip-path="url(#clip'+uid+')"><g transform="rotate('+state.angle+' '+r(cx)+' '+r(cy)+')" '+
+        'stroke="'+fg+'" stroke-width="'+state.stroke+'">'+hatchLines(cx,cy,R)+'</g></g>';
+    } else if(state.mode === "striped"){
+      defs = '<mask id="mask'+uid+'"><rect x="'+r(vx)+'" y="'+r(vy)+'" width="'+r(vw)+'" height="'+r(vh)+'" fill="#fff"/>'+
+        '<g transform="rotate('+state.angle+' '+r(cx)+' '+r(cy)+')" stroke="#000" stroke-width="'+state.stroke+'">'+
+        hatchLines(cx,cy,R)+'</g></mask>';
+      body = '<text '+textAttrs+' fill="'+fg+'" mask="url(#mask'+uid+')">'+word+'</text>';
+    } else {
+      defs = '<mask id="mask'+uid+'"><rect x="'+r(vx)+'" y="'+r(vy)+'" width="'+r(vw)+'" height="'+r(vh)+'" fill="#fff"/>'+
+        '<g transform="rotate('+state.angle+' '+r(cx)+' '+r(cy)+')">'+
+        '<rect x="'+r(cx-R)+'" y="'+r(cy-state.stroke/2)+'" width="'+r(2*R)+'" height="'+state.stroke+'" fill="#000"/>'+
+        '</g></mask>';
+      body = '<text '+textAttrs+' fill="'+fg+'" mask="url(#mask'+uid+')">'+word+'</text>';
+    }
+
+    var bgRect = state.invert ? '<rect x="'+r(vx)+'" y="'+r(vy)+'" width="'+r(vw)+'" height="'+r(vh)+'" fill="'+bg+'"/>' : "";
+
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+r(vx)+' '+r(vy)+' '+r(vw)+' '+r(vh)+
+      '" width="'+r(vw)+'" height="'+r(vh)+'" role="img" aria-label="'+word+'">'+
+      '<title>'+word+'</title><defs>'+defs+'</defs>'+bgRect+body+'</svg>';
+
+    return { svg:svg, w:vw, h:vh };
+  }
+
+  var counter = 0;
+  function render(){
+    var main = buildSVG(++counter);
+    var plate = document.getElementById("plate");
+    plate.innerHTML = main.svg;
+    plate.style.background = state.invert ? "#000" : "";
+    var el = plate.querySelector("svg");
+    el.removeAttribute("width"); el.removeAttribute("height");
+    el.setAttribute("width","100%");
+
+    [96,48,32,16].forEach(function(px){
+      var box = document.getElementById("r"+px);
+      var out = buildSVG(++counter);
+      box.innerHTML = out.svg;
+      box.style.background = state.invert ? "#000" : "";
+      var s = box.querySelector("svg");
+      var scale = px / out.h;
+      s.setAttribute("width", Math.round(out.w*scale));
+      s.setAttribute("height", px);
+    });
+
+    var scale16 = 16 / main.h;
+    var gap16 = (state.spacing - state.stroke) * scale16;
+    var ink16 = state.stroke * scale16;
+    var v = document.getElementById("verdict");
+    if(state.mode === "cut"){
+      v.className = "verdict";
+      v.textContent = "Single cut: one edge to read, holds all the way down to the favicon.";
+    } else if(gap16 < 0.5 || ink16 < 0.5){
+      v.className = "verdict warn";
+      v.textContent = "At 16 px: " + gap16.toFixed(2) + " px gap, " + ink16.toFixed(2) +
+        " px stroke. Below 0.5 px the render flattens to gray — plan a cut variant for the favicon.";
+    } else {
+      v.className = "verdict";
+      v.textContent = "At 16 px: " + gap16.toFixed(2) + " px gap, " + ink16.toFixed(2) + " px stroke. It holds.";
+    }
+
+    document.getElementById("dims").textContent =
+      "viewBox " + Math.round(main.w) + " × " + Math.round(main.h) + " px";
+  }
+
+  function bindRange(id, key, fmt){
+    var input = document.getElementById(id);
+    var out = document.getElementById(id + "-v");
+    input.addEventListener("input", function(){
+      state[key] = parseFloat(input.value);
+      out.textContent = fmt ? fmt(input.value) : input.value;
+      render();
+    });
+  }
+
+  bindRange("weight","weight");
+  bindRange("tracking","tracking");
+  bindRange("angle","angle", function(v){ return v + "°"; });
+  bindRange("stroke","stroke");
+  bindRange("spacing","spacing");
+
+  document.getElementById("text").addEventListener("input", function(e){
+    state.text = e.target.value; render();
+  });
+  document.getElementById("family").addEventListener("change", function(e){
+    state.family = e.target.value; render();
+  });
+  document.getElementById("invert").addEventListener("change", function(e){
+    state.invert = e.target.checked; render();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".modes button"), function(btn){
+    btn.addEventListener("click", function(){
+      state.mode = btn.dataset.mode;
+      Array.prototype.forEach.call(document.querySelectorAll(".modes button"), function(b){
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      render();
+    });
+  });
+
+  document.getElementById("download").addEventListener("click", function(){
+    var out = buildSVG(++counter);
+    var blob = new Blob([out.svg], {type:"image/svg+xml"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = (state.text || "logo").replace(/[^a-z0-9_-]/gi,"-").toLowerCase() + "-" + state.mode + ".svg";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  });
+
+  document.getElementById("copy").addEventListener("click", function(){
+    var btn = this;
+    var out = buildSVG(++counter);
+    var done = function(label){ btn.textContent = label; setTimeout(function(){ btn.textContent = "Copy code"; }, 1600); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(out.svg).then(function(){ done("Copied"); }, function(){ done("Failed — copy manually"); });
+    } else {
+      done("Clipboard unavailable");
+    }
+  });
+
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(render); }
+  render();
+})();
+</script>
+</body>
+</html>
