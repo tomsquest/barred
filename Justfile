@@ -35,7 +35,7 @@ check-python version="3.12":
     set -euo pipefail
     workdir=$(mktemp -d)
     trap 'rm -rf "$workdir"' EXIT
-    tar -cf - --exclude=__pycache__ pyproject.toml README.md LICENSE src tests demo uv.lock $([ -f .env ] && echo .env) | tar -xf - -C "$workdir"
+    tar -cf - --exclude=__pycache__ pyproject.toml README.md LICENSE src tests uv.lock $([ -f .env ] && echo .env) | tar -xf - -C "$workdir"
     sed -i 's/^requires-python = .*/requires-python = ">={{ version }}"/' "$workdir/pyproject.toml"
     cd "$workdir"
     uv run --python {{ version }} pytest
