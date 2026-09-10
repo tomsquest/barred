@@ -405,7 +405,6 @@ Publishing (no token involved).
 ```bash
 just release minor   # 0.2.0 => 0.3.0
 just release patch   # 0.2.0 => 0.2.1
-just release rc      # 0.2.0 => 0.2.0rc1, published as a pre-release
 just release 1.0.0   # explicit version
 ```
 
