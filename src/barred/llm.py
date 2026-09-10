@@ -97,7 +97,6 @@ class LLM:
             max_tokens: Passed to every `call`.
             reasoning_effort: Passed to every `call`.
             retry: Default number of retries on transient failure (0 = no retry).
-                Can be overridden per call.
             retry_base_delay: Base delay in seconds for exponential backoff between retries.
             retry_max_delay: Ceiling in seconds for a single backoff wait, so the last
                 retries stay short instead of doubling into minutes.
