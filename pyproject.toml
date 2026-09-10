@@ -1,6 +1,6 @@
 [project]
 name = "barred"
-version = "1.0.0"
+version = "1.1.0"
 description = "Unofficial implementation of BARRED: generate faithful, diverse labeled datasets"
 readme = "README.md"
 license = "MIT"
