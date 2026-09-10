@@ -103,7 +103,26 @@ class LLM:
             observer: Notified of every pipeline event, not just LLM calls. Defaults to a
                 no-op observer; `LoggingObserver` logs the whole run.
             **provider_kwargs: Forwarded to `AnyLLM.create` (e.g., VertexAI `project`, `location`).
+
+        Raises:
+            ValueError: An argument is empty or out of range.
         """
+        if not model:
+            msg = "model must not be empty"
+            raise ValueError(msg)
+        if max_tokens < 1:
+            msg = "max_tokens must be >= 1"
+            raise ValueError(msg)
+        if retry < 0:
+            msg = "retry must be >= 0"
+            raise ValueError(msg)
+        if retry_base_delay <= 0:
+            msg = "retry_base_delay must be > 0"
+            raise ValueError(msg)
+        if retry_max_delay < retry_base_delay:
+            msg = "retry_max_delay must be >= retry_base_delay"
+            raise ValueError(msg)
+
         self._client = AnyLLM.create(
             provider=provider,
             api_key=api_key,
@@ -149,8 +168,16 @@ class LLM:
                 `on_llm_call` so raw prompts can be tied back to their business context.
 
         Raises:
+            ValueError: An argument is empty or out of range.
             LLMCallError: Every attempt failed on a retryable error.
         """
+        if not messages:
+            msg = "messages must not be empty"
+            raise ValueError(msg)
+        if temperature is not None and temperature < 0:
+            msg = "temperature must be >= 0"
+            raise ValueError(msg)
+
         last_error: Exception
         for attempt in range(self._retry + 1):
             try:
