@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import random
 from typing import Any
 
@@ -25,13 +24,6 @@ from pydantic import BaseModel, ValidationError
 from barred.exceptions import LLMCallError
 from barred.observer import NullObserver, Observer
 from barred.types import Message
-
-# any-llm only raises its unified exceptions (RateLimitError, ProviderError...) when this is
-# set in the environment; otherwise it lets the raw provider exception through and warns.
-# The retry policy below is written against those unified exceptions, so the library forces
-# the setting rather than leaving its retries silently dead in consumer environments.
-# Issue: https://github.com/mozilla-ai/any-llm/issues/1369
-os.environ["ANY_LLM_UNIFIED_EXCEPTIONS"] = "1"
 
 
 class TokenUsage(BaseModel):
@@ -127,6 +119,8 @@ class LLM:
             provider=provider,
             api_key=api_key,
             api_base=api_base,
+            # Catch all failures the same across providers
+            unified_exceptions=True,
             **provider_kwargs,
         )
         self._model = model

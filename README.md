@@ -99,10 +99,6 @@ See the [full list of providers](https://docs.mozilla.ai/providers).
 
 Then set the matching key in your environment (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...) or pass it to the `llm()` constructor.
 
-Importing `barred` sets `ANY_LLM_UNIFIED_EXCEPTIONS=1` in your environment: the retry policy is written against
-any-llm's unified exceptions, which are not raised by default yet
-([any-llm#1369](https://github.com/mozilla-ai/any-llm/issues/1369)).
-
 ## Quick start
 
 ```python

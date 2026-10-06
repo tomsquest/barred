@@ -5,11 +5,12 @@ from any_llm import LLMProvider
 from any_llm.exceptions import AuthenticationError, RateLimitError
 from any_llm.types.completion import (
     ChatCompletion,
+    CompletionUsage,
     ParsedChatCompletion,
     ParsedChatCompletionMessage,
     ParsedChoice,
+    PromptTokensDetails,
 )
-from openai.types.completion_usage import CompletionUsage, PromptTokensDetails
 from pydantic import BaseModel, ValidationError
 
 from barred.exceptions import LLMCallError

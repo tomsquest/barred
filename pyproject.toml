@@ -33,8 +33,8 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "any-llm-sdk>=1.26.0,<2",
-    "pydantic>=2.13.4,<3",
+    "any-llm-sdk>=1.29.0,<2",
+    "pydantic>=2.13.5,<3",
 ]
 
 [project.urls]
@@ -46,18 +46,18 @@ Paper = "https://arxiv.org/abs/2604.25203"
 
 [dependency-groups]
 dev = [
-    "any-llm-sdk[anthropic,gemini,openai,openrouter]>=1.26.0",
-    "genai-prices>=0.1.4",
+    "any-llm-sdk[anthropic,gemini,openai,openrouter]>=1.29.0",
+    "genai-prices>=0.1.9",
     "ipykernel>=7.3.0",
-    "prek>=0.5.0",
+    "prek>=0.5.4",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
     "pytest-pretty>=1.3.0",
     "python-dotenv>=1.2.3",
     "rich>=15.0.0",
-    "ruff>=0.16.5",
-    "ty>=0.0.75",
+    "ruff>=0.16.9",
+    "ty>=0.0.84",
 ]
 
 [build-system]
